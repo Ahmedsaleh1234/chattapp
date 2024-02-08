@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{url_for('static' ,filename='dash.css')}}">
+</head>
+<body>
+    <div class="container">
+        <p class="top"> user Dashboard<p>
+        <div class="left">
+            <table width="100%" border="1px">
+                <tr>
+                    <td>
+                        <button class="user"><h3>USERS</h3></button>
+                        <div class="menu">
+                            <a href="#">User1</a>
+                            <a href="#">User1</a>
+                            <a href="#">User1</a>
+                            <a href="#">User1</a>
+                            <a href="#">User1</a>
+                            <a href="#">User1</a>
+                            <a href="#">User1</a>
+                            <a href="#">User1</a>
+                        </div>
+                    </td>
+
+                </tr>
+            </table>
+            <hr>
+            <table width="100%" border="1px">
+                <tr>
+                    <td>
+                       <button class="user"> <h3>GROUBS</h3></button>
+                       <div class="menu">
+                        <a href="#">Groub1</a>
+                        <a href="#">Groub2</a>
+                        <a href="#">Groub3</a>
+                        <a href="#">Groub4</a>
+                        <a href="#">Groub5</a>
+                        <a href="#">Groub6</a>
+                        <a href="#">Groub7</a>
+                        <a href="#">Groub8</a>
+                    </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="right">
+            <p>CHAT WENDOW</p>
+            <div class="window">
+                <h3>{{chat_id}}</h3>
+                <table width="100%" border="1px">
+                    <tr>
+                        <td>message text</td>
+                        <td>sender id</td>
+                        <td>timestamp</td>
+                        <td>message id</td>
+                    </tr>
+
+                </table>
+                
+
+            </div>
+            <form action="dash" method="POST">
+            <table width="100%" border="1px">
+                    <td width="80%">
+                        <input type="text" name="text" class="text" placeholder="type your message...">
+                    </td>
+                    <td width="10%">
+                        <button class="send">Send</button>
+                    </td>
+                </tr>
+            </table>
+            </form>
+        </div>
+        <div class="button">
+            <button>logout</button>
+        </div>
+    </div>
+</body>
+</html>

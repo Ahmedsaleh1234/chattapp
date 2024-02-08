@@ -1,0 +1,83 @@
+body{
+    margin: 0%;
+    padding: 0%;
+}
+.container{
+    width:100%;
+    height: 100vh;
+    display: flex;
+    justify-content: space-between;
+    background-color:whitesmoke;
+    
+}
+.top{
+    text-align: center;
+    height: 30px;
+    padding: 0px;
+    margin: 0px;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: wheat;
+    border: 5px solid wheat;
+    
+}
+.left{
+    width: 25%;
+    text-align: center;
+    background-color: antiquewhite;
+    margin: 50px 30px 5px 0px;
+    border: 5px solid antiquewhite;
+    border-radius: 15px;
+   
+
+}
+
+.right{
+    width: 70%;
+    background-color: antiquewhite;
+    margin: 50px 50px 5px 0px;
+    border: 5px solid wheat;
+    border-radius: 15px;
+}
+.window{
+    width:100%;
+    height: 75%;
+    margin: 5px 0px 25px 5px;
+    padding: 5px;
+    border: 1px solid whitesmoke;
+    border-right: none;
+}
+.text{
+    width: 100%;
+    padding: 15px;
+    border-left: none;
+}
+.send{
+    margin:0px 0px 0px 15px ;
+    padding: 15px;
+    width: 85%;
+    font-family: cursive;
+}
+.user{
+    text-align: center;
+    width: 100%;
+    font-family: 'Courier New', Courier, monospace;
+}
+.user:hover{
+    background-color: rgb(189, 40, 40);
+}
+.menu{
+    width: 100%;
+    max-height: 200px;
+    overflow-y: scroll ;
+}
+.menu a{
+    display: block;
+    background-color: grey;
+    padding: 12px;
+    text-decoration: none;
+    color: black;
+
+}
+.menu a:hover{
+    background-color: #ccc;
+}

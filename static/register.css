@@ -1,0 +1,37 @@
+* {box-sizing: border-box}
+.form{
+    padding: 16px;
+
+}
+input[type=text], input[type=password], input[type=email]{
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin: 5px 0px 15px 0px;
+    background-color: whitesmoke;
+    border: none;
+}
+input[type=text], input[type=password], input[type=email]:hover{
+    background-color: #ddd;
+    outline: none;
+}
+hr {
+    border: 1px solid #f1f1f1;
+    margin-bottom: 25px;
+  }
+button{
+    width: 100%;
+    padding: 16px 20px;
+    background-color: green;
+    color: white;
+    cursor: pointer;
+    font-size: large;
+    opacity: 0.9;
+    border: none;
+}
+button:hover{
+    opacity: 1;
+}
+a{
+    margin: 10px;
+}

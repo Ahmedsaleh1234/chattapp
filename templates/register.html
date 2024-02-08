@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>register form</title>
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='register.css')}}">
+</head>
+<body>
+    <form action="register" method="POST">
+        <div class="form">
+            <h1>Register</h1>
+            <p>please fill in this form to create an acount</p>
+            <hr>
+            <label for="email"> Email</label>
+            <input type="email" name="email" placeholder="enter your email" required>
+            <label for="name"> Name</label>
+            <input type="text" name="name" placeholder="enter your name" required>
+            <label for="password">Password</label>
+            <input type="password" name="password" placeholder="enter your password" required>
+            <hr>
+            <p>by creating an acount you already agree on <a href="#">Terms & privacy</a></p>
+
+            <button type="submit" class="button"> Resgister</button>
+        </div>
+        <div class="sign">
+            <p>already you have an acount <a href="sign in">sign in</a> </p>
+            <a href="home"> Home</a>
+        </div>
+    </form>
+    
+</body>
+</html>
