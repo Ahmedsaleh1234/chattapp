@@ -1,0 +1,82 @@
+*{
+    margin: 0%;
+    padding: 0%;
+    box-sizing: border-box;
+}
+section{
+min-height: 100vh;
+background-image:linear-gradient(rgba(0,0,0,0.60), rgba(0,0,0,0.60)),url(pngtree-yellow-tourism-trolley-case-to-chat-with-image_13961.jpg) ;
+background-repeat: no-repeat;
+background-size: cover;
+}
+.contaner{
+    width: 85%;
+    margin: auto;
+}
+nav{
+    height: 80px;
+}
+nav h1{
+    float: left;
+    line-height: 80px;
+    font-size: 35px;
+    font-size: inline;
+    color: #eb7620;
+}
+nav ul{
+    float: right;
+    line-height: 30px;
+}
+nav ul li{
+    display: inline-block;
+    list-style: none;
+    padding: 0px 5px;
+    margin-top: 20px;
+}
+nav ul li a{
+    color: white;
+    text-decoration: none;
+    text-transform: uppercase;
+    border-radius: 5px;
+    padding: 7px 8px;
+    
+
+}
+nav ul li  a:hover{
+    background-color: #eb7620;
+    transition: 0.5 ease;
+}
+.active{
+    background-color: #eb7620;
+}
+.article{
+    width: 50%;
+    margin: auto;
+    text-align: center;
+    transform: translateY(25vh);
+}
+.article h1{
+    font-size: 36px;
+    color: #fff;
+    letter-spacing: 1.5px;
+    font-weight: 800;
+    margin-bottom: 25px;
+}
+.article p{
+    font-size: 18px;
+    color: #eb7620;
+    line-height: 1.5;
+    margin-bottom: 50px;
+}
+.btn{
+    color: #fff;
+    padding: 12px 25px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    background-color: #f15048;
+}
+.btn:hover{
+    background-color: #439943;
+    transition: 0.5s ease;
+}

@@ -1,9 +1,10 @@
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request, redirect
 from kafka import KafkaConsumer, KafkaProducer
 import os
 import time
 import json
 import pymongo
+import datetime
 
 app = Flask(__name__, static_url_path='/static')
 app.secret_key = 'any random string'
@@ -11,17 +12,43 @@ app.secret_key = 'any random string'
 myclient = pymongo.MongoClient('mongodb://localhost:27017/')
 user_db = myclient['authentication']
 user_table = user_db['user_info']
+#producer = KafkaProducer(bootstrap_server = 'localhost:9092')
+user_data = {}
+msg_count = 0
 @app.route('/')
 @app.route('/home')
 def home():
+   
     return render_template('home.html')
 
-@app.route('/dash')
-def dash():
-    return render_template('dashboard.html')
+@app.route('/dash/<string:user_id>', methods=['GET', 'POST'])
+def dash(user_id):
+    global user_data
+    chat_id = user_data[user_id]['cid']
+    if chat_id != None:
+        chat_id = chat_id.strip()
+    if user_id in user_data:
+        if chat_id in user_data[user_id]['msg_list']:
+            return render_template('dashboard.html',
+                                    uid=user_id,
+                                    cid=user_data[user_id]['cid'],
+                                    user_list=user_data[user_id]['user_list'],
+                                    group_list=user_data[user_id]['group_list'],
+                                    msg_list=user_data[user_id]['msg_list'][chat_id])
+        else:
+            return render_template('dashboard.html',
+                                    uid=user_id,
+                                    cid=user_data[user_id]['cid'],
+                                    user_list=user_data[user_id]['user_list'],
+                                    group_list=user_data[user_id]['group_list'],
+                                    msg_list={})
+
+
+    return redirect('/home')
 
 @app.route('/register' ,methods=['GET', 'POST'])
 def reg():
+    global user_data
     if(request.method == 'POST'):
         req = request.form
         req =dict(req)
@@ -40,7 +67,13 @@ def reg():
         }
         if(flag == 0):
             temp = user_table.insert_one(reg_dict)
-            return render_template('dashboard.html')
+            uid = req['name']
+            user_data[uid] = {}
+            user_data[uid]['cid'] = None
+            user_data[uid]['user_list'] = []
+            user_data[uid]['group_list'] = []
+            user_data[uid]['msg_list'] = {}
+            return redirect('/dash/'+str(uid))
         else:
             return 'user already exist'
         
@@ -49,6 +82,7 @@ def reg():
 
 @app.route('/sign in', methods=['GET', 'POST'])
 def sign():
+    global user_data
     if(request.method == 'POST'):
         req =request.form
         req = dict(req)
@@ -63,12 +97,97 @@ def sign():
                 break
         if (flag == 1):
             if(tmp['password'] == req['password']):
-                return render_template('dashboard.html')
+                uid = tmp['name']
+                user_data[uid] = {}
+                user_data[uid]['cid'] = None
+                user_data[uid]['user_list'] = []
+                user_data[uid]['group_list'] = []
+                user_data[uid]['msg_list'] = {}
+
+                return redirect('/dash/' + str(uid))
             else:
-                return 'invalid password or email'
+                return 'invalid password'
     else:
         return render_template('signin.html')
+    if (flag == 0):
+        return 'user is not exist'
+    
 
+@app.route('/user/<string:user_id>', methods=['GET', 'POST'])
+def user(user_id):
+    global user_data
+    file = open('users.txt', 'r')
+    data = file.readlines()
+    user_data[user_id]['user_list'] = data
+    return redirect('/dash/'+str(user_id))
+
+@app.route('/group/<string:user_id>', methods=['GET', 'POST'])
+def group(user_id):
+    global user_data
+    file = open('groups.txt', 'r')
+    data = file.readlines()
+    user_data[user_id]['group_list']= data
+    return redirect('/dash/'+str(user_id))
+@app.route('/update_cid/<string:user_id>/<string:chat_id>', methods=['GET', 'POST'])
+def update(user_id, chat_id):
+    global user_data
+    user_data[user_id]['cid'] = chat_id
+    return redirect('/dash/'+ str(user_id))
+
+@app.route('/send_msg/<string:user_id>', methods=['GET', 'POST'] )
+def send_msg(user_id):
+    global user_data, msg_count
+    if(request.method == 'POST'):
+        req = request.form
+        req = dict(req)
+        print(req)
+        text = req['text']#text text
+        chat_id = user_data[user_id]['cid']
+        if chat_id != None:
+            chat_id = chat_id.strip()
+        timestamp = c.strftime("%I:%M %p")
+        msg_count += 1
+        c = datetime.datetime.now()
+        """ dict_msg = {
+            "op_type":"send",
+            "uid1":user_id,
+            "uid2":chat_id,
+            "text":text,
+            "timestamp":timestamp,
+            "msg_id":msg_count
+                    }
+        topic = "ActionServer"
+        """
+       # producer.send(topic,json.dumps(dict_msg).encode('utf-8'))
+        
+        if chat_id in user_data[user_id]['msg_list']:
+            user_data[user_id]['msg_list'][chat_id][msg_count] = {}
+            user_data[user_id]['msg_list'][chat_id][msg_count]['text'] = text
+            user_data[user_id]['msg_list'][chat_id][msg_count]['send_uid'] = user_id
+            user_data[user_id]['msg_list'][chat_id][msg_count]['timestamp'] =timestamp
+        else:
+            user_data[user_id]['msg_list'][chat_id]={} 
+            user_data[user_id]['msg_list'][chat_id][msg_count] = {}
+            user_data[user_id]['msg_list'][chat_id][msg_count]['text'] = text
+            user_data[user_id]['msg_list'][chat_id][msg_count]['send_uid'] = user_id
+            user_data[user_id]['msg_list'][chat_id][msg_count]['timestamp'] =timestamp
+    return redirect('/dash/'+str(user_id))
+
+@app.route('/logout/<string:user_id>', methods=['GET', 'POST'])
+def logout(user_id):
+    global user_data
+    print('logout', user_id)
+    user_data.pop(user_id)
+
+    
+    return redirect('/home')
+
+@app.route('/delete/<string:user_id>', methods=['GET', 'POST'])
+def delete(user_id):
+    global user_data
+    print('logout', user_id)
+    user_table.delete_one({'name': user_id})
+    return redirect('/home')
 
 
 if __name__ == '__main__':
