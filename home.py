@@ -5,9 +5,12 @@ import time
 import json
 import pymongo
 import datetime
-
-app = Flask(__name__, static_url_path='/static')
+from flask_socketio import SocketIO, send, join_room
+"""this a flask module"""
+app = Flask(__name__)
 app.secret_key = 'any random string'
+socketio = SocketIO(app, cors_allowed_origins="*")
+
 
 myclient = pymongo.MongoClient('mongodb://localhost:27017/')
 user_db = myclient['authentication']
@@ -15,14 +18,18 @@ user_table = user_db['user_info']
 #producer = KafkaProducer(bootstrap_server = 'localhost:9092')
 user_data = {}
 msg_count = 0
+connected_clients = {} 
+"""Store connected clients and their chat IDs"""
 @app.route('/')
 @app.route('/home')
 def home():
+    """an function to home page"""
    
     return render_template('home.html')
 
 @app.route('/dash/<string:user_id>', methods=['GET', 'POST'])
 def dash(user_id):
+    """this function deploy the dashboard page"""
     global user_data
     chat_id = user_data[user_id]['cid']
     if chat_id != None:
@@ -48,6 +55,7 @@ def dash(user_id):
 
 @app.route('/register' ,methods=['GET', 'POST'])
 def reg():
+    """this funcion to deploy an sign up page"""
     global user_data
     if(request.method == 'POST'):
         req = request.form
@@ -75,13 +83,15 @@ def reg():
             user_data[uid]['msg_list'] = {}
             return redirect('/dash/'+str(uid))
         else:
-            return 'user already exist'
+            error = "user already exist !"
+            return render_template('register.html',error=error)
         
 
     return render_template('register.html')
 
 @app.route('/sign in', methods=['GET', 'POST'])
 def sign():
+    """this funcion is to check if user is already exict"""
     global user_data
     if(request.method == 'POST'):
         req =request.form
@@ -115,6 +125,7 @@ def sign():
 
 @app.route('/user/<string:user_id>', methods=['GET', 'POST'])
 def user(user_id):
+    """this function is to read from user file"""
     global user_data
     file = open('users.txt', 'r')
     data = file.readlines()
@@ -123,6 +134,7 @@ def user(user_id):
 
 @app.route('/group/<string:user_id>', methods=['GET', 'POST'])
 def group(user_id):
+    """this function is to read from group file"""
     global user_data
     file = open('groups.txt', 'r')
     data = file.readlines()
@@ -133,6 +145,7 @@ def update(user_id, chat_id):
     global user_data
     user_data[user_id]['cid'] = chat_id
     return redirect('/dash/'+ str(user_id))
+
 
 @app.route('/send_msg/<string:user_id>', methods=['GET', 'POST'] )
 def send_msg(user_id):
@@ -145,10 +158,11 @@ def send_msg(user_id):
         chat_id = user_data[user_id]['cid']
         if chat_id != None:
             chat_id = chat_id.strip()
+        c = datetime.datetime.now()
         timestamp = c.strftime("%I:%M %p")
         msg_count += 1
-        c = datetime.datetime.now()
-        """ dict_msg = {
+       
+        """dict_msg = {
             "op_type":"send",
             "uid1":user_id,
             "uid2":chat_id,
@@ -158,6 +172,7 @@ def send_msg(user_id):
                     }
         topic = "ActionServer"
         """
+       
        # producer.send(topic,json.dumps(dict_msg).encode('utf-8'))
         
         if chat_id in user_data[user_id]['msg_list']:
@@ -173,8 +188,10 @@ def send_msg(user_id):
             user_data[user_id]['msg_list'][chat_id][msg_count]['timestamp'] =timestamp
     return redirect('/dash/'+str(user_id))
 
+
 @app.route('/logout/<string:user_id>', methods=['GET', 'POST'])
 def logout(user_id):
+    """this function is to logout the user"""
     global user_data
     print('logout', user_id)
     user_data.pop(user_id)
@@ -184,11 +201,19 @@ def logout(user_id):
 
 @app.route('/delete/<string:user_id>', methods=['GET', 'POST'])
 def delete(user_id):
+    """this function is to delete user"""
     global user_data
     print('logout', user_id)
     user_table.delete_one({'name': user_id})
     return redirect('/home')
+@socketio.on("connect")
+def connect(auth):
+    global user_data
+    name = user_data[auth]
+    join_room()
+    
+
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app,debug=True)
